@@ -91,12 +91,13 @@ ratio_funcs = {
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='GC calculations')
-    parser.add_argument('seq', type=str, help='sequence')
+    parser.add_argument('seq', type=str, help='sequence fasta filename or NCBI ID')
     parser.add_argument('-w', '--window', type=int, default=1000, help='window size')
     parser.add_argument('-s', '--step', type=int, default=10, help='step')
     parser.add_argument('-f', '--func', type=str, choices=ratio_funcs.keys(), default=next(iter(ratio_funcs)), help='ratio function')
     args = parser.parse_args()
-    seq_filename = download_seq(args.seq)
-    seq = get_seq(seq_filename)
+    if not args.seq.endswith('.fasta'):
+        args.seq = download_seq(args.seq)
+    seq = get_seq(args.seq)
     gc_ratio = calc(seq, args.window, args.step, ratio_funcs[args.func]['func'])
     gc_plot(gc_ratio, args.func)
